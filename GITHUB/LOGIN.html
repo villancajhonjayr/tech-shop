@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BOSSING TECH STORE</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url('BACKGROUND.jpg') no-repeat center center/cover;
+}
+
+/* BLUR OVERLAY */
+.overlay {
+    backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.5);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* LOGIN CONTAINER */
+.container {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    padding: 30px;
+    width: 350px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    width: 100%;
+    padding: 12px 40px 12px 12px; /* space for icons */
+    margin: 8px 0;
+    border-radius: 6px;
+    border: none;
+    text-align: center; /* center input text */
+    box-sizing: border-box;
+}
+
+.password-box {
+    position: relative;
+    width: 100%;
+}
+
+.password-box span {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px;
+    color: black;
+}
+
+.options {
+    display: flex;
+    justify-content: center; /* center options */
+    gap: 20px;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+    background: #2563eb;
+    transform: scale(1.02);
+}
+
+.error {
+    color: #ff6b6b;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* SIGNUP MODAL */
+.signup-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.signup-modal.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.signup-modal-content {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    padding: 25px;
+    width: 350px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.signup-modal.active .signup-modal-content {
+    transform: scale(1);
+}
+
+.signup-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.signup-error {
+    color: #ff6b6b;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.signup-modal input[type="text"],
+.signup-modal input[type="email"],
+.signup-modal input[type="password"] {
+    text-align: center;
+    padding: 12px 40px 12px 12px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: none;
+}
+
+.signup-modal .password-box span {
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+</style>
+</head>
+<body>
+
+<div class="overlay">
+    <div class="container">
+        <h2>💻 BOSSING TECH STORE</h2>
+        <form onsubmit="return validateLogin()">
+            <input type="email" id="email" placeholder="Email Address">
+            <div class="password-box">
+                <input type="password" id="password" placeholder="Password">
+                <span onclick="togglePassword()">👁️</span>
+            </div>
+            <div class="options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="#" style="color:white;">Forgot?</a>
+            </div>
+            <p class="error" id="error-msg"></p>
+            <button type="submit">Login</button>
+        </form>
+        <div class="footer" onclick="openSignupModal()">
+            Don't have an account? <span style="text-decoration: underline;">Sign up</span>
+        </div>
+    </div>
+</div>
+
+<!-- SIGNUP MODAL -->
+<div class="signup-modal" id="signupModal">
+    <div class="signup-modal-content">
+        <span class="signup-modal-close" onclick="closeSignupModal()">✖</span>
+        <h2 style="text-align:center;">💻 Sign Up</h2>
+        <form onsubmit="return validateSignup()">
+            <input type="text" id="signup-name" placeholder="Full Name">
+            <input type="email" id="signup-email" placeholder="Email Address">
+            <div class="password-box">
+                <input type="password" id="signup-password" placeholder="Password">
+                <span onclick="toggleSignupPassword()">👁️</span>
+            </div>
+            <div class="password-box">
+                <input type="password" id="signup-confirm" placeholder="Confirm Password">
+                <span onclick="toggleConfirmPassword()">👁️</span>
+            </div>
+            <p class="signup-error" id="signup-error-msg"></p>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Toggle password visibility
+function togglePassword() { 
+    document.getElementById("password").type = document.getElementById("password").type === "password" ? "text" : "password"; 
+}
+function toggleSignupPassword() { 
+    document.getElementById("signup-password").type = document.getElementById("signup-password").type === "password" ? "text" : "password"; 
+}
+function toggleConfirmPassword() { 
+    document.getElementById("signup-confirm").type = document.getElementById("signup-confirm").type === "password" ? "text" : "password"; 
+}
+
+// Login validation
+function validateLogin() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const error = document.getElementById("error-msg");
+
+    if(email === "" || password === "") {
+        error.textContent = "Please fill in all fields!";
+        return false;
+    }
+
+    // Redirect to index.html after successful login
+    if(email === "bossing@techstore.com" && password === "1234") {
+        window.location.href = "index.html"; // <-- redirect
+        return false;
+    } else {
+        error.textContent = "Invalid email or password!";
+        return false;
+    }
+}
+
+// Open/close signup modal
+function openSignupModal() { document.getElementById("signupModal").classList.add("active"); }
+function closeSignupModal() { document.getElementById("signupModal").classList.remove("active"); }
+
+// Signup validation with automatic redirect
+function validateSignup() {
+    const name = document.getElementById("signup-name").value;
+    const email = document.getElementById("signup-email").value;
+    const password = document.getElementById("signup-password").value;
+    const confirm = document.getElementById("signup-confirm").value;
+    const error = document.getElementById("signup-error-msg");
+
+    if(name === "" || email === "" || password === "" || confirm === "") {
+        error.textContent = "Please fill in all fields!";
+        return false;
+    }
+
+    if(password !== confirm) {
+        error.textContent = "Passwords do not match!";
+        return false;
+    }
+
+    // Redirect to index.html after successful signup
+    closeSignupModal();
+    window.location.href = "index.html";
+    return false;
+}
+
+// Close modal on outside click
+document.getElementById("signupModal").addEventListener("click", function(e){
+    if(e.target === this){ closeSignupModal(); }
+});
+</script>
+
+</body>
+</html>

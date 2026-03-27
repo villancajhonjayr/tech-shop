@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BOSSING TECH STORE</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: url('BACKGROUND.jpg') no-repeat center center/cover;
+}
+
+/* BLUR OVERLAY */
+.overlay {
+    backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.6);
+    min-height: 100vh;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    color: white;
+    position: relative;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    cursor: default;
+}
+
+.nav-btn {
+    background:#ef4444;
+    color:white;
+    padding:6px 12px;
+    border-radius:6px;
+    font-weight:bold;
+    text-decoration:none;
+    cursor:pointer;
+    margin-right: 15px;
+}
+
+.cart-icon {
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.cart-icon:hover {
+    transform: scale(1.2);
+}
+
+/* CART DROPDOWN */
+.cart-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: rgba(0,0,0,0.95);
+    color: white;
+    width: 350px;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.cart-dropdown h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+/* Cart items */
+.cart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 5px;
+    transition: background 0.2s;
+}
+
+.cart-item:hover {
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+}
+
+.cart-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.cart-item-details {
+    flex-grow: 1;
+}
+
+.cart-item-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.cart-item-price {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.cart-item-qty {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+
+.cart-item-qty button {
+    padding: 2px 6px;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.remove-btn {
+    margin-left: 5px;
+    color: red;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* SEARCH */
+.search-bar {
+    text-align: center;
+    margin: 10px;
+}
+
+.search-bar input {
+    width: 60%;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+}
+
+.search-bar input:focus {
+    outline: none;
+    box-shadow: 0 0 8px 2px rgba(255,255,255,0.5);
+    transition: box-shadow 0.3s;
+}
+
+/* PRODUCTS */
+.products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    width: 230px;
+    margin: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    color: white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.7);
+}
+
+.card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.card h3, .card p {
+    margin: 10px;
+}
+
+.rating {
+    margin: 0 10px;
+    color: gold;
+}
+
+/* BUTTONS */
+button {
+    display: block;
+    width: 80%;
+    margin: 8px auto;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.add { background: #22c55e; color: white; }
+.add:hover { background: #16a34a; transform: scale(1.05); }
+
+.order { background: #3b82f6; color: white; }
+.order:hover { background: #2563eb; transform: scale(1.05); }
+
+/* PRODUCT MODAL */
+.product-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.product-modal.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.product-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.product-modal.active .product-modal-content {
+    transform: scale(1);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+}
+
+.product-modal-content img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.product-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 22px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">💻 BOSSING TECH STORE</div>
+
+   <!-- Logout Button with realistic effect -->
+<div style="text-align:center; margin: 30px 0;">
+    <a href="login.html" class="logout-btn">Logout</a>
+</div>
+
+<style>
+.logout-btn {
+    display: inline-block;
+    background: linear-gradient(145deg, #ff4b2b, #ff416c);
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    font-size: 16px;
+}
+
+.logout-btn:hover {
+    background: linear-gradient(145deg, #ff416c, #ff4b2b);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+.logout-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+</style>
+
+    <div class="cart-icon" onclick="toggleCart()">🛒 Cart (<span id="cart-count">0</span>)</div>
+
+    <div class="cart-dropdown" id="cart-dropdown">
+        <h3>Your Cart</h3>
+        <div id="cart-items"></div>
+        <h4>Total: ₱<span id="total">0</span></h4>
+    </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-bar">
+    <input type="text" placeholder="Search computer parts...">
+</div>
+
+<!-- PRODUCTS -->
+<div class="products">
+
+<div class="card" onclick="openProductModal('Alienware 18 Gaming Laptop','High performance gaming laptop with Intel i9, NVIDIA RTX 3080, 18-inch display.',97500,'LAPTOP.jpg',5)">
+    <img src="LAPTOP.jpg" alt="Alienware Laptop">
+    <h3>Alienware 18 Gaming Laptop</h3>
+    <p>₱97,500</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('Alienware 18 Gaming Laptop',97500,'LAPTOP.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('Alienware 18 Gaming Laptop',97500)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('MSI Graphics Card','Powerful graphics card suitable for gaming and rendering.',9950,'GRAPHICS.jpg',4)">
+    <img src="GRAPHICS.jpg" alt="MSI Graphics">
+    <h3>MSI Graphics Card</h3>
+    <p>₱9,950</p>
+    <div class="rating">⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('MSI Graphics Card',9950,'GRAPHICS.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('MSI Graphics Card',9950)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('16GB RAM TEAMGROUP','High-speed 16GB RAM from TEAMGROUP for smooth multitasking.',11500,'RAM.jpg',5)">
+    <img src="RAM.jpg" alt="16GB RAM">
+    <h3>16GB RAM TEAMGROUP</h3>
+    <p>₱11,500</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('16GB RAM TEAMGROUP',11500,'RAM.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('16GB RAM TEAMGROUP',11500)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('Motherboard','High-quality motherboard compatible with Intel and AMD CPUs.',25500,'MOTHERBOARD.jpg',4)">
+    <img src="MOTHERBOARD.jpg" alt="Motherboard">
+    <h3>Motherboard</h3>
+    <p>₱25,500</p>
+    <div class="rating">⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('Motherboard',25500,'MOTHERBOARD.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('Motherboard',25500)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('AMD Ryzen 9 7950X','High-performance AMD processor for gaming and content creation with 16 cores.',55000,'images/RYZEN.jpg',5)">
+    <img src="AMD.jpg" alt="AMD Ryzen 9 7950X">
+    <h3>AMD Ryzen 9 7950X</h3>
+    <p>₱55,500</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('AMD Ryzen 9 7950X',55000,'images/RYZEN.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('AMD Ryzen 9 7950X',55000)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('ASUS ROG Strix Z790-E','Premium gaming motherboard with advanced connectivity and cooling.',26000,'images/ASUS_MOTHERBOARD.jpg',5)">
+    <img src="ASUSROG.jpg" alt="ASUS ROG Strix Z790-E">
+    <h3>ASUS ROG Strix Z790-E</h3>
+    <p>₱26,500</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('ASUS ROG Strix Z790-E',26000,'images/ASUS_MOTHERBOARD.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('ASUS ROG Strix Z790-E',26000)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('NVIDIA RTX 4090','Top-tier graphics card for extreme gaming and AI workloads.',175000,'images/RTX4090.jpg',5)">
+    <img src="NVEDIA.jpg" alt="NVIDIA RTX 4090">
+    <h3>NVIDIA RTX 4090</h3>
+    <p>₱175,500</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('NVIDIA RTX 4090',175000,'images/RTX4090.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('NVIDIA RTX 4090',175000)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('Seagate 4TB HDD','Reliable high-capacity 4TB HDD storage for desktops.',4500,'images/HDD.jpg',4)">
+    <img src="SEAGATE.jpg" alt="Seagate 4TB HDD">
+    <h3>Seagate 4TB HDD</h3>
+    <p>₱4,500</p>
+    <div class="rating">⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('Seagate 4TB HDD',4500,'images/HDD.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('Seagate 4TB HDD',4500)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('EVGA 850W Power Supply','Efficient and stable 850W PSU for high-end gaming builds.',7800,'images/PSU.jpg',4)">
+    <img src="EVGA.jpg" alt="EVGA 850W Power Supply">
+    <h3>EVGA 850W Power Supply</h3>
+    <p>₱7,800</p>
+    <div class="rating">⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('EVGA 850W Power Supply',7800,'images/PSU.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('EVGA 850W Power Supply',7800)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('Logitech Mechanical Keyboard','Durable mechanical keyboard with RGB lighting and programmable keys.',5500,'images/KEYBOARD.jpg',5)">
+    <img src="LOGITECH.jpg" alt="Logitech Mechanical Keyboard">
+    <h3>Logitech Mechanical Keyboard</h3>
+    <p>₱5,500</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('Logitech Mechanical Keyboard',5500,'images/KEYBOARD.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('Logitech Mechanical Keyboard',5500)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('Razer Gaming Mouse','High-precision gaming mouse with customizable DPI and RGB lighting.',3500,'images/MOUSE.jpg',5)">
+    <img src="RAZER.jpeg" alt="Razer Gaming Mouse">
+    <h3>Razer Gaming Mouse</h3>
+    <p>₱3,500</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('Razer Gaming Mouse',3500,'images/MOUSE.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('Razer Gaming Mouse',3500)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('LG UltraGear 34-inch Monitor','Curved ultra-wide monitor for immersive gaming and multitasking.',32000,'images/MONITOR.jpg',5)">
+    <img src="LG.jpg" alt="LG UltraGear 34-inch Monitor">
+    <h3>LG UltraGear 34-inch Monitor</h3>
+    <p>₱32,500</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('LG UltraGear 34-inch Monitor',32500,'images/MONITOR.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('LG UltraGear 34-inch Monitor',32500)">Order Now</button>
+</div>
+
+<div class="card" onclick="openProductModal('HyperX Cloud II Headset','Comfortable gaming headset with 7.1 surround sound.',4200,'images/HEADSET.jpg',5)">
+    <img src="HYPER.jpg" alt="HyperX Cloud II Headset">
+    <h3>HyperX Cloud II Headset</h3>
+    <p>₱4,200</p>
+    <div class="rating">⭐⭐⭐⭐⭐</div>
+    <button class="add" onclick="event.stopPropagation(); addToCart('HyperX Cloud II Headset',4200,'images/HEADSET.jpg')">Add to Cart</button>
+    <button class="order" onclick="event.stopPropagation(); orderNow('HyperX Cloud II Headset',4200)">Order Now</button>
+</div>
+
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="product-modal" id="productModal">
+    <div class="product-modal-content" id="productModalContent">
+        <span class="product-modal-close" onclick="closeProductModal()">✖</span>
+        <img id="modalImage" src="" alt="Product">
+        <h3 id="modalName"></h3>
+        <p id="modalDescription"></p>
+        <h4 id="modalPrice"></h4>
+        <div id="modalRating"></div>
+        <button class="add" id="modalAddBtn">Add to Cart</button>
+    </div>
+</div>
+
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+function updateCart() {
+    const cartItemsDiv = document.getElementById("cart-items");
+    cartItemsDiv.innerHTML = '';
+    let total = 0;
+    cart.forEach((item, index) => {
+        total += item.price * item.quantity;
+        const cartItem = document.createElement('div');
+        cartItem.className = 'cart-item';
+        cartItem.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-details">
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-price">₱${item.price}</div>
+                <div class="cart-item-qty">
+                    <button onclick="decreaseQty(${index})">-</button>
+                    ${item.quantity}
+                    <button onclick="increaseQty(${index})">+</button>
+                    <span class="remove-btn" onclick="removeItem(${index})">✖</span>
+                </div>
+            </div>
+        `;
+        cartItemsDiv.appendChild(cartItem);
+    });
+    document.getElementById("total").textContent = total;
+    document.getElementById("cart-count").textContent = cart.length;
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+// CART FUNCTIONS
+function addToCart(name, price, image) {
+    const existing = cart.find(item => item.name === name);
+    if(existing){ existing.quantity++; }
+    else { cart.push({name, price, image, quantity:1}); }
+    updateCart();
+    showCartDropdown();
+}
+
+function removeItem(index){ cart.splice(index,1); updateCart(); }
+function increaseQty(index){ cart[index].quantity++; updateCart(); }
+function decreaseQty(index){ if(cart[index].quantity>1){cart[index].quantity--;} else{removeItem(index);} updateCart(); }
+function orderNow(name, price){ alert("Ordered: "+name+" (₱"+price+")"); }
+function toggleCart(){ const c=document.getElementById("cart-dropdown"); c.style.display=c.style.display==='block'?'none':'block'; }
+function showCartDropdown(){ document.getElementById("cart-dropdown").style.display='block'; }
+
+// PRODUCT MODAL
+function openProductModal(name, description, price, image, rating){
+    document.getElementById("modalImage").src=image;
+    document.getElementById("modalName").textContent=name;
+    document.getElementById("modalDescription").textContent=description;
+    document.getElementById("modalPrice").textContent='₱'+price;
+    document.getElementById("modalRating").textContent=''.padStart(rating,'⭐');
+    document.getElementById("modalAddBtn").onclick=function(){ addToCart(name,price,image); closeProductModal(); }
+    const modal=document.getElementById("productModal");
+    modal.classList.add('active');
+}
+
+function closeProductModal(){
+    document.getElementById("productModal").classList.remove('active');
+}
+
+document.getElementById("productModal").addEventListener('click', function(e){
+    if(e.target===this){ closeProductModal(); }
+});
+
+updateCart();
+</script>
+
+</body>
+</html>
